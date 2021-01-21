@@ -29,6 +29,6 @@ then
 
     # finally create the PR
     curl -X POST -H "Content-Type: application/json" -H "Authorization: token $GITHUB_TOKEN" \
-         --data '{"title":"Auto-update cargo crates","head":"automated_cargo_update","base":"main", "body":"Dependencies update review"}' \
+         --data '{"title":"Auto-update cargo crates","head":"$BRANCH_NAME","base":"main", "body":"Dependencies update review"}' \
          https://api.github.com/repos/$ORGANIZATION/akri/pulls
 fi
