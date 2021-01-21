@@ -15,9 +15,10 @@ if [ -z "$TOKEN" ]; then
 fi
 
 # assumes the repo is already cloned as a prerequisite for running the script
+echo "Checking out to a branch"
 git checkout -b $BRANCH_NAME
 
-# run the update command
+echo "Running update command"
 eval $UPDATE_COMMAND
 
 if [ -n "git diff" ]
