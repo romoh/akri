@@ -24,7 +24,7 @@ then
     git config --global user.name $USERNAME
 
     # format: https://[USERNAME]:[TOKEN]@github.com/[ORGANIZATION]/[REPO].git
-    git remote add authenticated https://$USERNAME:$TOKEN@github.com/$ORGANIZATION/$REPO.git
+    git remote add authenticated "https://$USERNAME:$TOKEN@github.com/$ORGANIZATION/$REPO.git"
 
     # commit the changes to Cargo.lock
     git commit -a -m "Auto-update cargo crates"
