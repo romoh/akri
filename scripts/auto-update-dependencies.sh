@@ -15,17 +15,15 @@ if [ -z "$TOKEN" ]; then
 fi
 
 # assumes the repo is already cloned as a prerequisite for running the script
-echo "Checking out to a branch"
 git checkout -b $BRANCH_NAME
 
 echo "Running update command"
-cargo update && cargo test
-
-#eval $UPDATE_COMMAND
+eval $UPDATE_COMMAND
 
 if [ -n "git diff" ]
 then
     echo "Updates detected"
+    
     # configure git authorship
     git config --global user.email $EMAIL
     git config --global user.name $USERNAME
