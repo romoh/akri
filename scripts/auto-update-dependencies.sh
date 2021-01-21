@@ -16,7 +16,7 @@ fi
 
 # assumes the repo is already cloned as a prerequisite for running the script
 git checkout -b $BRANCH_NAME
-$($UPDATE_COMMAND)
+$(($UPDATE_COMMAND))
 
 if [ -n "git diff" ]
 then
