@@ -3,9 +3,10 @@
 TOKEN=$1
 USERNAME="romoh"
 ORGANIZATION="romoh"
+UPDATE_COMMAND="cargo update && cargo test"
 
 REPO="akri"
-BRANCH_NAME="automated-cargo-update-123"
+BRANCH_NAME="automated-cargo-update"
 EMAIL="noreply@github.com"
 
 if [ -z "$TOKEN" ]; then
@@ -15,7 +16,7 @@ fi
 
 # assumes the repo is already cloned as a prerequisite for running the script
 git checkout -b $BRANCH_NAME
-#cargo update && cargo test
+$UPDATE_COMMAND
 
 if [ -n "git diff" ]
 then
