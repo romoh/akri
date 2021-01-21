@@ -9,7 +9,7 @@ BRANCH_NAME="automated_cargo_update_"
 
 # assumes the repo is already cloned as a prerequisite for running the script
 git checkout -b $BRANCH_NAME
-cargo update && cargo test
+cargo update #&& cargo test
 
 DIFF=`git diff`
 if [ -n "$DIFF" ]
