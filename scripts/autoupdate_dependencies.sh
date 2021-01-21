@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GITHUB_TOKEN="b80d58f112d4293bb5e1a7f092f9357adc0b88bf"
+GITHUB_TOKEN="ad93a3fb57879bf14d0b6ea497102cc60efcabc7"
 EMAIL="romoh@microsoft.com"
 USERNAME="romoh"
 
