@@ -24,7 +24,7 @@ if [ -n "$DIFF" ]; then
     git commit -a -m "Auto-update cargo crates"
 
     # push the changes so that PR API has something to compare against
-    #git push authenticated $BRANCH_NAME
+    git push authenticated $BRANCH_NAME
 
     # finally create the PR
     # curl -X POST -H "Content-Type: application/json" -H "Authorization: token $GITHUB_TOKEN" \
