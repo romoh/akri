@@ -1,0 +1,12 @@
+name: 'auto-update-dependencies'
+description: 'Auto update cargo crate dependencies'
+inputs:
+  token:
+    description: Token used to send pull requests
+    required: true
+runs:
+  using: 'composite'
+  steps:
+     - run: ./scripts/auto-update-dependencies.sh -c
+            TOKEN: ${{ inputs.token }}
+       shell: bash
