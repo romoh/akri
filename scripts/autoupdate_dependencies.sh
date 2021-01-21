@@ -3,7 +3,7 @@
 TOKEN=$1
 REPO="akri"
 BRANCH_NAME="automated-cargo-update"
-EMAIL="noreply@github.com"
+EMAIL="romoh@microsoft.com" #"noreply@github.com"
 USERNAME="romoh" # "GitHub"
 ORGANIZATION=USERNAME
 
