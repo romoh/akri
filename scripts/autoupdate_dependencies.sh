@@ -5,7 +5,7 @@ if [ -z "$GITHUB_TOKEN" ]; then
     exit 1
 fi
 
-BRANCH_NAME="automated_cargo_update_attempt"
+BRANCH_NAME="automated_cargo_update_"
 
 # assumes the repo is already cloned as a prerequisite for running the script
 git checkout -b $BRANCH_NAME
@@ -29,6 +29,6 @@ then
 
     # finally create the PR
     curl -X POST -H "Content-Type: application/json" -H "Authorization: token $GITHUB_TOKEN" \
-         --data '{"title":"Auto-update cargo crates","head": "automated_cargo_update_attempt","base":"main", "body":"Dependencies update review"}' \
+         --data '{"title":"Auto-update cargo crates","head": "'"$BRANCH_NAME"'","base":"main", "body":"Dependencies update review"}' \
          https://api.github.com/repos/$ORGANIZATION/akri/pulls
 fi
