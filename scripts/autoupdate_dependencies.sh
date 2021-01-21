@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GITHUB_TOKEN="8214e7ea47900b4f52546bf0865898435d8391f6"
+GITHUB_TOKEN="v1nq7K+h0Uc24dgBLKSTOtifQ0OcpCqOcQHLqJuBOUo" #"8214e7ea47900b4f52546bf0865898435d8391f6"
 
 if [ -z "$GITHUB_TOKEN" ]; then
     echo "GITHUB_TOKEN is not defined"
@@ -18,7 +18,7 @@ if [ -n "$DIFF" ]; then
     git config --global user.email $EMAIL
     git config --global user.name $USERNAME
 
-    git remote add authenticated https://romoh:$GITHUB_TOKEN@github.com/romoh/akri.git
+    git remote add authenticated https://romoh:$GITHUB_TOKEN@github.com/romoh/akri.git #https://github.com/romoh/akri.git
 
     # commit the changes to Cargo.lock
     git commit -a -m "Auto-update cargo crates"
