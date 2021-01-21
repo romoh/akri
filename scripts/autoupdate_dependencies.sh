@@ -18,6 +18,7 @@ git checkout -b $BRANCH_NAME
 
 if [ -n "git diff" ]
 then
+    echo "Updates detected"
     # configure git authorship
     git config --global user.email $EMAIL
     git config --global user.name $USERNAME
