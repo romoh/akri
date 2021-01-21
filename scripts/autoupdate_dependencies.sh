@@ -1,14 +1,9 @@
 #!/bin/bash
 
-GITHUB_TOKEN="0e8a6cd51881ac7e4f86c76b805afbd8a232d986"
-EMAIL="romoh@microsoft.com"
-USERNAME="romoh"
-ORGANIZATION="romoh" #"deislabs"
-
-if [ -z "$GITHUB_TOKEN" ]; then
-    echo "GITHUB_TOKEN is not defined"
-    exit 1
-fi
+# if [ -z "$GITHUB_TOKEN" ]; then
+#     echo "GITHUB_TOKEN is not defined"
+#     exit 1
+# fi
 
 BRANCH_NAME="automated_cargo_update_"
 
