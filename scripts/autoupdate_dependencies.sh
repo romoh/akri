@@ -2,10 +2,10 @@
 
 TOKEN=$1
 REPO="akri"
-BRANCH_NAME="automated-cargo-update-testing"
+BRANCH_NAME="automated-cargo-update-123"
 EMAIL="noreply@github.com"
-USERNAME="GitHub"
-ORGANIZATION="romoh"
+USERNAME="romoh"
+ORGANIZATION=USERNAME
 
 if [ -z "$TOKEN" ]; then
     echo "TOKEN is not defined"
