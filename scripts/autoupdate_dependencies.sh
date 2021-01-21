@@ -4,7 +4,7 @@ TOKEN=$1
 REPO="akri"
 BRANCH_NAME="automated-cargo-update"
 EMAIL="noreply@github.com"
-USERNAME="GitHub"
+USERNAME="romoh" # "GitHub"
 ORGANIZATION=USERNAME
 
 if [ -z "$TOKEN" ]; then
