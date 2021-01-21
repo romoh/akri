@@ -19,7 +19,9 @@ echo "Checking out to a branch"
 git checkout -b $BRANCH_NAME
 
 echo "Running update command"
-eval $UPDATE_COMMAND
+cargo update && cargo test
+
+#eval $UPDATE_COMMAND
 
 if [ -n "git diff" ]
 then
