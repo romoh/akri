@@ -5,7 +5,9 @@ if [ -z "$TOKEN" ]; then
     exit 1
 fi
 
-BRANCH_NAME="automated-cargo-update"
+BRANCH_NAME="automated-cargo-update2"
+EMAIL="noreply@github.com"
+USERNAME="GitHub"
 
 # assumes the repo is already cloned as a prerequisite for running the script
 git checkout -b $BRANCH_NAME
