@@ -5,7 +5,7 @@ REPO="akri"
 BRANCH_NAME="automated-cargo-update"
 EMAIL="romoh@microsoft.com" #"noreply@github.com"
 USERNAME="romoh" # "GitHub"
-ORGANIZATION=USERNAME
+ORGANIZATION="romoh"
 
 if [ -z "$TOKEN" ]; then
     echo "TOKEN is not defined"
