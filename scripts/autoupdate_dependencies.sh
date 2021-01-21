@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# if [ -z "$GITHUB_TOKEN" ]; then
-#     echo "GITHUB_TOKEN is not defined"
-#     exit 1
-# fi
+if [ -z "$GITHUB_TOKEN" ]; then
+    echo "GITHUB_TOKEN is not defined"
+    exit 1
+fi
 
 BRANCH_NAME="automated_cargo_update_"
 
