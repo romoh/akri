@@ -5,7 +5,7 @@ if [ -z "$GITHUB_TOKEN" ]; then
     exit 1
 fi
 
-BRANCH_NAME="automated_cargo_update_"
+BRANCH_NAME="automated_cargo_update_attempt"
 
 # assumes the repo is already cloned as a prerequisite for running the script
 git checkout -b $BRANCH_NAME
@@ -18,7 +18,7 @@ then
     git config --global user.email $EMAIL
     git config --global user.name $USERNAME
 
-    # format: https://[USERNAME]:[TOKEN]@github.com/[ORGANIZATION]/[REPO].git
+    # format: https://[USERNAME]:[GITHUB_TOKEN]@github.com/[ORGANIZATION]/[REPO].git
     git remote add authenticated https://$USERNAME:$GITHUB_TOKEN@github.com/$ORGANIZATION/akri.git
 
     # commit the changes to Cargo.lock
