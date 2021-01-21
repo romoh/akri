@@ -1,6 +1,8 @@
 #!/bin/bash
 
 GITHUB_TOKEN="8214e7ea47900b4f52546bf0865898435d8391f6"
+EMAIL="romoh@microsoft.com"
+USERNAME="romoh"
 
 if [ -z "$GITHUB_TOKEN" ]; then
     echo "GITHUB_TOKEN is not defined"
