@@ -20,7 +20,7 @@ if [ -n "$DIFF" ]; then
     git config --global user.email $EMAIL
     git config --global user.name $USERNAME
 
-    git remote add authenticated https://oauth2:$GITHUB_TOKEN@github.com/romoh/akri.git #https://github.com/romoh/akri.git
+    git remote add authenticated https://romoh:$GITHUB_TOKEN@github.com/romoh/akri.git #https://github.com/romoh/akri.git
 
     # commit the changes to Cargo.lock
     git commit -a -m "Auto-update cargo crates"
