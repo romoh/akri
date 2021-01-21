@@ -1,0 +1,28 @@
+name: Check versioning
+
+on:
+  schedule:
+    branches: [ main ]
+    - cron: '*/15 * * * *' #every 15 mins
+    #- cron: '0 0 * * *'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the head commit of the branch
+      uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+    
+    # Only run version check for PRs.  If PR title does NOT contain "[SAME VERSION]", then ensure that
+    # version.txt is different from what is in main.
+    - name: Run auto dependency update 
+      uses: ./.github/actions/auto-update-dependencies
+      with: 
+        token: ${{ secrets.GITHUB_TOKEN }
+        
