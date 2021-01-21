@@ -1,11 +1,12 @@
 #!/bin/bash
 
 TOKEN=$1
-REPO="akri"
-BRANCH_NAME="automated-cargo-update-testing"
-EMAIL="noreply@github.com"
-USERNAME="GitHub"
+USERNAME="romoh"
 ORGANIZATION="romoh"
+
+REPO="akri"
+BRANCH_NAME="automated-cargo-update-123"
+EMAIL="noreply@github.com"
 
 if [ -z "$TOKEN" ]; then
     echo "TOKEN is not defined"
@@ -33,7 +34,8 @@ then
     git push authenticated $BRANCH_NAME
 
     echo "https://api.github.com/repos/$ORGANIZATION/$REPO/pulls"
-    # finally create the PR
+
+    # create the PR
     curl -X POST -H "Content-Type: application/json" -H "Authorization: token $TOKEN" \
          --data '{"title":"Auto-update cargo crates","head": "'"$BRANCH_NAME"'","base":"main", "body":"Dependencies update review"}' \
          "https://api.github.com/repos/$ORGANIZATION/$REPO/pulls"
