@@ -7,6 +7,5 @@ inputs:
 runs:
   using: 'composite'
   steps:
-     - run: ./scripts/auto-update-dependencies.sh -c
-            TOKEN: ${{ inputs.token }}
+     - run: ./scripts/auto-update-dependencies.sh ${{ inputs.token }}
        shell: bash
