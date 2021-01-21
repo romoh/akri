@@ -1,9 +1,9 @@
 #!/bin/bash
 
 TOKEN=$1
+UPDATE_COMMAND=$2
 USERNAME="romoh"
 ORGANIZATION="romoh"
-UPDATE_COMMAND="cargo update && cargo test"
 
 REPO="akri"
 BRANCH_NAME="automated-cargo-update"
@@ -17,13 +17,13 @@ fi
 # assumes the repo is already cloned as a prerequisite for running the script
 git checkout -b $BRANCH_NAME
 
-echo "Running update command"
+echo "Running update command $UPDATE_COMMAND"
 eval $UPDATE_COMMAND
 
 if [ -n "git diff" ]
 then
     echo "Updates detected"
-    
+
     # configure git authorship
     git config --global user.email $EMAIL
     git config --global user.name $USERNAME

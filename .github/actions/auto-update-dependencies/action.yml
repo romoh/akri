@@ -4,8 +4,11 @@ inputs:
   token:
     description: Token used to send pull requests
     required: true
+  update-command:
+    description: Command to update dependencies and do initial checks
+    required: true
 runs:
   using: 'composite'
   steps:
-     - run: ./scripts/auto-update-dependencies.sh ${{ inputs.token }}
+     - run: ./scripts/auto-update-dependencies.sh ${{ inputs.token }} ${{ input.update-command }}
        shell: bash
