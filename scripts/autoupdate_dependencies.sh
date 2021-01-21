@@ -35,5 +35,5 @@ then
     # finally create the PR
     curl -X POST -H "Content-Type: application/json" -H "Authorization: token $TOKEN" \
          --data '{"title":"Auto-update cargo crates","head": "'"$BRANCH_NAME"'","base":"main", "body":"Dependencies update review"}' \
-         https://api.github.com/repos/$ORGANIZATION/$REPO/pulls
+         "https://api.github.com/repos/$ORGANIZATION/$REPO/pulls"
 fi
