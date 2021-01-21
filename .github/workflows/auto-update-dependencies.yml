@@ -2,9 +2,8 @@ name: Check versioning
 
 on:
   schedule:
-    branches: [ main ]
-    - cron: '*/15 * * * *' #every 15 mins
-    #- cron: '0 0 * * *'
+    - cron: '*/15 * * * *'
+      #- cron: '0 0 * * *'
 
 env:
   CARGO_TERM_COLOR: always
