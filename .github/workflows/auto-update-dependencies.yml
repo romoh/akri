@@ -17,11 +17,17 @@ jobs:
       uses: actions/checkout@v2
       with:
         persist-credentials: false
+        
+    - name: Install Linux requirements
+      run: |
+        apt_dependencies="git curl libssl-dev pkg-config libudev-dev libv4l-dev"
+        echo "Run apt update and apt install the following dependencies: $apt_dependencies"
+        sudo apt update
+        sudo apt install -y $apt_dependencies
     
-    # Only run version check for PRs.  If PR title does NOT contain "[SAME VERSION]", then ensure that
-    # version.txt is different from what is in main.
     - name: Run auto dependency update 
       uses: ./.github/actions/auto-update-dependencies
       with: 
         token: ${{ secrets.GITHUB_TOKEN }}
+        update-command: "cargo update && cargo test" 
         
