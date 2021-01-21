@@ -10,5 +10,5 @@ inputs:
 runs:
   using: 'composite'
   steps:
-     - run: ./scripts/auto-update-dependencies.sh ${{ inputs.token }} ${{ input.update-command }}
+     - run: ./scripts/auto-update-dependencies.sh ${{ inputs.token }} ${{ inputs.update-command }}
        shell: bash
