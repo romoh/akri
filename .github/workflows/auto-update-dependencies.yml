@@ -1,4 +1,4 @@
-name: Check versioning
+name: Auto update dependencies
 
 on:
   schedule:
