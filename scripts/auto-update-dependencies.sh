@@ -1,17 +1,28 @@
 #!/bin/bash
 
 TOKEN=$1
-UPDATE_COMMAND=$2
-USERNAME="romoh"
-ORGANIZATION="romoh"
+REPO=$2
+UPDATE_COMMAND=$3
+USERNAME=$4
+ORGANIZATION=$5
 
 REPO="akri"
-BRANCH_NAME="automated-cargo-update"
+BRANCH_NAME="automated-cargo-update__"
 EMAIL="noreply@github.com"
 
 if [ -z "$TOKEN" ]; then
     echo "TOKEN is not defined"
     exit 1
+fi
+
+if [ -z "$ORGANIZATION" ]; then
+    echo "Organization is not defined, defaulting to $USERNAME"
+    ORGANIZATION=USERNAME
+fi
+
+if [ -z "$USERNAME" ]; then
+    echo "Username is not defined, defaulting to 'GitHub'"
+    USERNAME="GitHub"
 fi
 
 # assumes the repo is already cloned as a prerequisite for running the script
@@ -20,6 +31,7 @@ git checkout -b $BRANCH_NAME
 echo "Running update command $UPDATE_COMMAND"
 eval $UPDATE_COMMAND
 
+echo eval "git diff"
 if [ -n "git diff" ]
 then
     echo "Updates detected"
