@@ -30,7 +30,7 @@ jobs:
       with: 
         token: ${{ secrets.GITHUB_TOKEN }}
         repo: "akri"
-        update-command: "cargo update && cargo test" 
+        update-command: "'cargo update && cargo test'" 
         username: "romoh"
         organization: "romoh"
         
