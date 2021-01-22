@@ -29,5 +29,8 @@ jobs:
       uses: ./.github/actions/auto-update-dependencies
       with: 
         token: ${{ secrets.GITHUB_TOKEN }}
+        repo: "akri"
         update-command: "cargo update && cargo test" 
+        username: "romoh"
+        organization: "romoh"
         
