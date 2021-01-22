@@ -7,7 +7,7 @@ USERNAME=$4
 ORGANIZATION=$5
 
 REPO="akri"
-BRANCH_NAME="automated-cargo-update__"
+BRANCH_NAME="automated-cargo-update123"
 EMAIL="noreply@github.com"
 
 if [ -z "$TOKEN" ]; then
@@ -31,7 +31,7 @@ git checkout -b $BRANCH_NAME
 echo "Running update command $UPDATE_COMMAND"
 eval $UPDATE_COMMAND
 
-echo eval "git diff"
+git diff
 if [ -n "git diff" ]
 then
     echo "Updates detected"
