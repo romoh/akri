@@ -16,7 +16,7 @@ jobs:
     - name: Checkout the head commit of the branch
       uses: actions/checkout@v2
       with:
-        persist-credentials: false
+        persist-credentials: false 
         
     - name: Install Linux requirements
       run: |
@@ -26,11 +26,8 @@ jobs:
         sudo apt install -y $apt_dependencies
     
     - name: Run auto dependency update 
-      uses: ./.github/actions/auto-update-dependencies
+      uses: romoh/dependencies-autoupdate@main
       with: 
         token: ${{ secrets.GITHUB_TOKEN }}
-        repo: "akri"
-        update-command: "'cargo update && cargo test'" 
-        username: "romoh"
-        organization: "romoh"
+        update-command: "'cargo update && cargo test'"
         
