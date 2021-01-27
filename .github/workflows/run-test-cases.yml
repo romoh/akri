@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
   pull_request:
-    branches: [ main ]
+    branches: # [ main ]
     paths:
     - test/run-end-to-end.py
     - test/run-conservation-of-broker-pod.py
@@ -21,7 +21,7 @@ on:
     - build/akri-containers.mk
     - Makefile
   push:
-    branches: [ main ]
+    branches: # [ main ]
     paths:
     - test/run-end-to-end.py
     - test/run-conservation-of-broker-pod.py
