@@ -97,7 +97,7 @@ async fn internal_do_instance_watch(
             // inner loop handle_instance call in internal_do_instance_watch
             // cannot execute at the same time.
             let _lock = synchronization.lock().await;
-            trace!("internal_do_instance_watch - aquired sync lock");
+            trace!("internal_do_instance_watch - acquired sync lock");
             handle_instance(event?, kube_interface).await?;
         }
     }

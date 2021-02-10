@@ -10,7 +10,8 @@ use std::collections::HashMap;
 
 pub type KubeAkriInstance = Object<Instance, Void>;
 pub type KubeAkriInstanceList = ObjectList<Object<Instance, Void>>;
-
+pub type Slot = String;
+pub type NodeName = String;
 /// Defines the information in the Instance CRD
 ///
 /// An Instance is a specific instance described by
@@ -34,7 +35,7 @@ pub struct Instance {
 
     /// This contains a list of the nodes that can access this capability instance
     #[serde(default)]
-    pub nodes: Vec<String>,
+    pub nodes: Vec<NodeName>,
 
     /// This contains a map of capability slots to node names.  The number of
     /// slots corresponds to the associated Configuration.capacity
@@ -42,7 +43,7 @@ pub struct Instance {
     /// been claimed) or to a node name (corresponding to the node that has claimed
     /// the slot)
     #[serde(default)]
-    pub device_usage: HashMap<String, String>,
+    pub device_usage: HashMap<Slot, NodeName>,
 
     /// This is a placeholder for eventual RBAC support
     #[serde(default = "default_rbac")]

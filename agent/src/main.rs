@@ -21,11 +21,7 @@ mod util;
 use akri_shared::akri::{metrics::run_metrics_server, API_NAMESPACE};
 use log::{info, trace};
 use prometheus::{HistogramVec, IntGaugeVec};
-use std::time::Duration;
-use util::{
-    config_action, constants::SLOT_RECONCILIATION_SLOT_GRACE_PERIOD_SECS,
-    slot_reconciliation::periodic_slot_reconciliation,
-};
+use util::{config_action, slot_reconciliation};
 
 lazy_static! {
     // Reports the number of Instances visible to this node, grouped by Configuration and whether it is shared
@@ -38,7 +34,7 @@ lazy_static! {
 #[cfg(unix)]
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync + 'static>> {
-    println!("{} Agent start", API_NAMESPACE);
+    info!("{} Agent start", API_NAMESPACE);
 
     println!(
         "{} KUBERNETES_PORT found ... env_logger::init",
@@ -57,11 +53,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync + 'static>
         run_metrics_server().await.unwrap();
     }));
 
+    // Start watching pods to reconcile unused/incorrectly allocated slots
     tasks.push(tokio::spawn(async move {
-        let slot_grace_period = Duration::from_secs(SLOT_RECONCILIATION_SLOT_GRACE_PERIOD_SECS);
-        periodic_slot_reconciliation(slot_grace_period)
-            .await
-            .unwrap();
+        slot_reconciliation::watch_pods().await.unwrap();
     }));
 
     tasks.push(tokio::spawn(async move {
