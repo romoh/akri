@@ -3,7 +3,7 @@ entries:
   akri:
   - apiVersion: v2
     appVersion: 0.1.5
-    created: "2021-02-10T23:26:17.317614737Z"
+    created: "2021-02-11T00:02:09.342366322Z"
     description: A Helm chart for Akri releases
     digest: 54e337d9c5a2a7fc78939604f928b5e711a32d7a2fd7c8e520ac17ffe4313a04
     name: akri
@@ -13,7 +13,7 @@ entries:
     version: 0.1.5
   - apiVersion: v2
     appVersion: 0.0.44
-    created: "2021-02-10T23:26:17.316643533Z"
+    created: "2021-02-11T00:02:09.341432224Z"
     description: A Helm chart for Akri releases
     digest: 1af2ef93938854fb6fe94bed397817c22216c513379fe79af7bae5bb476e82fd
     name: akri
@@ -23,7 +23,7 @@ entries:
     version: 0.0.44
   - apiVersion: v2
     appVersion: 0.0.36
-    created: "2021-02-10T23:26:17.315779428Z"
+    created: "2021-02-11T00:02:09.340544725Z"
     description: A Helm chart for Akri
     digest: dce3b578337732ea279734160399e89264d07e6e05164d721bbb8e1b1aae475a
     name: akri
@@ -33,7 +33,7 @@ entries:
     version: 0.0.36
   - apiVersion: v2
     appVersion: 0.0.35
-    created: "2021-02-10T23:26:17.314790324Z"
+    created: "2021-02-11T00:02:09.339668827Z"
     description: A Helm chart for Akri
     digest: a2f07d58121e44bc9137c69a68e4e00b36888230022386af08135f092d50957f
     name: akri
@@ -43,7 +43,7 @@ entries:
     version: 0.0.35
   - apiVersion: v2
     appVersion: 0.0.34
-    created: "2021-02-10T23:26:17.31397692Z"
+    created: "2021-02-11T00:02:09.338805228Z"
     description: A Helm chart for Akri
     digest: 7de3828affe7184c6bc9376092499cfd0afbf7d12c2bada21d9d85aeddbbea4f
     name: akri
@@ -54,9 +54,9 @@ entries:
   akri-dev:
   - apiVersion: v2
     appVersion: 0.1.17
-    created: "2021-02-10T23:26:17.338247934Z"
+    created: "2021-02-11T00:02:09.36310029Z"
     description: A Helm chart for Akri development
-    digest: 68430ece5cae3a05a0e5b74ce7bdb227492c0f020532f9b2666dca389c29d139
+    digest: d9c6d588d38d4d65b1a96150702664181d654bfd5be8e2cfcf02ec8004f3fd46
     name: akri-dev
     type: application
     urls:
@@ -64,7 +64,7 @@ entries:
     version: 0.1.17
   - apiVersion: v2
     appVersion: 0.1.16
-    created: "2021-02-10T23:26:17.336196925Z"
+    created: "2021-02-11T00:02:09.361973091Z"
     description: A Helm chart for Akri development
     digest: c977b4a5c5bb4cb48c9d93ce88c719c0b1b4208af8730f794215e4701032d8d6
     name: akri-dev
@@ -74,7 +74,7 @@ entries:
     version: 0.1.16
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2021-02-10T23:26:17.334311216Z"
+    created: "2021-02-11T00:02:09.360484194Z"
     description: A Helm chart for Akri development
     digest: 44d90fe6e007d200f8aab8eb64d322457d6b51923d60abb1964631b131f71e16
     name: akri-dev
@@ -84,7 +84,7 @@ entries:
     version: 0.1.13
   - apiVersion: v2
     appVersion: 0.1.12
-    created: "2021-02-10T23:26:17.33319071Z"
+    created: "2021-02-11T00:02:09.359052696Z"
     description: A Helm chart for Akri development
     digest: 164201ab4bf0363111c46cd40dfdfdaaf2debb6514da189a05bfe75be0e62aaf
     name: akri-dev
@@ -94,7 +94,7 @@ entries:
     version: 0.1.12
   - apiVersion: v2
     appVersion: 0.1.11
-    created: "2021-02-10T23:26:17.332142005Z"
+    created: "2021-02-11T00:02:09.357721698Z"
     description: A Helm chart for Akri development
     digest: 06b70a8c0afef2114c64a27ab8f92959318f9d181430cf5a5e4a1b2733d0b4b8
     name: akri-dev
@@ -104,7 +104,7 @@ entries:
     version: 0.1.11
   - apiVersion: v2
     appVersion: 0.1.10
-    created: "2021-02-10T23:26:17.3309983Z"
+    created: "2021-02-11T00:02:09.356187001Z"
     description: A Helm chart for Akri development
     digest: c5dd99ce6e5a7ae08fc9991f60fba0e908672933691cac6f34bbc38451a65502
     name: akri-dev
@@ -114,7 +114,7 @@ entries:
     version: 0.1.10
   - apiVersion: v2
     appVersion: 0.1.5
-    created: "2021-02-10T23:26:17.342392654Z"
+    created: "2021-02-11T00:02:09.366796384Z"
     description: A Helm chart for Akri development
     digest: 3c37096ec3060dcc634a2f2d63208d904640d0874c9ead8cf69752b08bd48eea
     name: akri-dev
@@ -124,7 +124,7 @@ entries:
     version: 0.1.5
   - apiVersion: v2
     appVersion: 0.1.4
-    created: "2021-02-10T23:26:17.341229848Z"
+    created: "2021-02-11T00:02:09.365863485Z"
     description: A Helm chart for Akri development
     digest: db13fdc0128ad36dff802312f5a31992f4102eb5cbcaf340e3cce3ff9f404feb
     name: akri-dev
@@ -134,7 +134,7 @@ entries:
     version: 0.1.4
   - apiVersion: v2
     appVersion: 0.1.3
-    created: "2021-02-10T23:26:17.340250344Z"
+    created: "2021-02-11T00:02:09.364937087Z"
     description: A Helm chart for Akri development
     digest: efb17dbaf7179806d3fd93e22ab3c04eb7f43655ba1256974de253e1b1756d7d
     name: akri-dev
@@ -144,7 +144,7 @@ entries:
     version: 0.1.3
   - apiVersion: v2
     appVersion: 0.1.2
-    created: "2021-02-10T23:26:17.339203639Z"
+    created: "2021-02-11T00:02:09.364003088Z"
     description: A Helm chart for Akri development
     digest: 7c84873b8988fbe600b375c39a8bf5fee6339922ddaec406984185138e19882b
     name: akri-dev
@@ -154,7 +154,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 0.1.1
-    created: "2021-02-10T23:26:17.329888195Z"
+    created: "2021-02-11T00:02:09.354748803Z"
     description: A Helm chart for Akri development
     digest: a09f59983f5191af808d2dba868a25c37fff64798c3e439e6519b2fedbbc8faf
     name: akri-dev
@@ -164,7 +164,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2021-02-10T23:26:17.32886569Z"
+    created: "2021-02-11T00:02:09.353743604Z"
     description: A Helm chart for Akri development
     digest: 5ace4bb921388f574df57aefe514249c81725de80801c612d8c9e0fe8b4ad184
     name: akri-dev
@@ -174,7 +174,7 @@ entries:
     version: 0.1.0
   - apiVersion: v2
     appVersion: 0.0.44
-    created: "2021-02-10T23:26:17.327888385Z"
+    created: "2021-02-11T00:02:09.352631206Z"
     description: A Helm chart for Akri development
     digest: 6e23ffffb1259bf6bc1892b01d134c373684c65bad9019c147cfa905bc1e8c29
     name: akri-dev
@@ -184,7 +184,7 @@ entries:
     version: 0.0.44
   - apiVersion: v2
     appVersion: 0.0.43
-    created: "2021-02-10T23:26:17.327041881Z"
+    created: "2021-02-11T00:02:09.351772807Z"
     description: A Helm chart for Akri development
     digest: 75daff7eeae69578f715851ac152ac112dea0226e8164e5688b9c04e6bdd5c23
     name: akri-dev
@@ -194,7 +194,7 @@ entries:
     version: 0.0.43
   - apiVersion: v2
     appVersion: 0.0.42
-    created: "2021-02-10T23:26:17.326206578Z"
+    created: "2021-02-11T00:02:09.350944409Z"
     description: A Helm chart for Akri development
     digest: 2d3e43e2e1fcd2281081654e57858f37e8dd7befd6b2f48540b9841819057778
     name: akri-dev
@@ -204,7 +204,7 @@ entries:
     version: 0.0.42
   - apiVersion: v2
     appVersion: 0.0.41
-    created: "2021-02-10T23:26:17.325264573Z"
+    created: "2021-02-11T00:02:09.35006961Z"
     description: A Helm chart for Akri development
     digest: c1274e722178e944893afd44b7b5b4074b17928e976b27033148d0ca24f1d587
     name: akri-dev
@@ -214,7 +214,7 @@ entries:
     version: 0.0.41
   - apiVersion: v2
     appVersion: 0.0.40
-    created: "2021-02-10T23:26:17.324426269Z"
+    created: "2021-02-11T00:02:09.349142812Z"
     description: A Helm chart for Akri development
     digest: d0c8f0ed2c0c162aa37fa58663f9e11a85d1018badd9e9f9d7ce06e8c3142876
     name: akri-dev
@@ -224,7 +224,7 @@ entries:
     version: 0.0.40
   - apiVersion: v2
     appVersion: 0.0.39
-    created: "2021-02-10T23:26:17.323457665Z"
+    created: "2021-02-11T00:02:09.348168713Z"
     description: A Helm chart for Akri development
     digest: be510d653342169116527396a495c565f29168adf48ab9c38ccbcc1a06ee4872
     name: akri-dev
@@ -234,7 +234,7 @@ entries:
     version: 0.0.39
   - apiVersion: v2
     appVersion: 0.0.38
-    created: "2021-02-10T23:26:17.321490355Z"
+    created: "2021-02-11T00:02:09.347358914Z"
     description: A Helm chart for Akri development
     digest: 8b1f98fe3236416d092a9a49b5ad2c2fccfecf20e16471fe88d92ed157f7667b
     name: akri-dev
@@ -244,7 +244,7 @@ entries:
     version: 0.0.38
   - apiVersion: v2
     appVersion: 0.0.37
-    created: "2021-02-10T23:26:17.319945348Z"
+    created: "2021-02-11T00:02:09.346489716Z"
     description: A Helm chart for Akri development
     digest: d5d5ce299e7eb3b54ce60f0f97a43fef3874b2d31b21bfdbf4126f3d4841205b
     name: akri-dev
@@ -254,7 +254,7 @@ entries:
     version: 0.0.37
   - apiVersion: v2
     appVersion: 0.0.36
-    created: "2021-02-10T23:26:17.318921043Z"
+    created: "2021-02-11T00:02:09.345178818Z"
     description: A Helm chart for Akri development
     digest: 9e9aa30417050b5a3fa263139f0b9f6013ad60026f4f8436ee2726f46671c249
     name: akri-dev
@@ -262,4 +262,4 @@ entries:
     urls:
     - https://deislabs.github.io/akri/akri-dev-0.0.36.tgz
     version: 0.0.36
-generated: "2021-02-10T23:26:17.313008215Z"
+generated: "2021-02-11T00:02:09.337794829Z"
