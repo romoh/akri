@@ -5,6 +5,7 @@ use akri_shared::{
 };
 use async_trait::async_trait;
 use futures::StreamExt;
+use k8s_openapi::api::core::v1::PodStatus;
 use kube::api::{Api, Informer, WatchEvent};
 use mockall::automock;
 use mockall::predicate::*;
@@ -71,6 +72,40 @@ pub async fn reconcile(
     slot_query: &impl SlotQuery,
     kube_interface: &impl KubeInterface,
 ) {
+    // First, check if any of the existing pods running on this node that has a container
+    // that is still not ready, this way we avoid incorrectly cleaning up slots during
+    // container bring-up. When the container is ready, Informer will inform us that
+    // the pod was modified and then reconcile will be called again
+    let pods = match kube_interface
+        .find_pods_with_field(&format!("{}={}", "spec.nodeName", &node_name,))
+        .await
+    {
+        Ok(pods) => {
+            trace!("reconcile - found {} pods on this node", pods.items.len());
+            pods
+        }
+        Err(e) => {
+            trace!("reconcile - error finding pending pods: {}", e);
+            return;
+        }
+    };
+
+    let any_unready_pods = pods.items.iter().any(|pod| {
+        pod.status
+            .as_ref()
+            .unwrap_or(&PodStatus::default())
+            .conditions
+            .as_ref()
+            .unwrap_or(&Vec::new())
+            .iter()
+            .any(|condition| condition.type_ == "ContainersReady" && condition.status != "True")
+    });
+
+    if any_unready_pods {
+        info!("reconcile - pods with unready containers exist on this node, we can't reconcile slots yet");
+        return;
+    }
+
     // Use crictl to check which pods of the current node are currently assigned slots
     let node_slot_usage = match slot_query.get_node_slots().await {
         Ok(usage) => usage,
@@ -78,7 +113,7 @@ pub async fn reconcile(
             warn!("reconcile - get_node_slots failed: {:?}", e);
             // If an error occurs in the crictl call, return early
             // to avoid treating this error like crictl found no
-            // active containers.  Currently, reconcile is a best
+            // active containers. Currently, reconcile is a best
             // effort approach.
             return;
         }
@@ -287,6 +322,8 @@ pub async fn watch_pods() -> anyhow::Result<()> {
 mod reconcile_tests {
     use super::*;
     use akri_shared::{akri::instance::KubeAkriInstanceList, k8s::MockKubeInterface, os::file};
+    use k8s_openapi::api::core::v1::PodSpec;
+    use kube::api::{Object, ObjectList};
 
     fn configure_get_node_slots(mock: &mut MockSlotQuery, result: HashSet<String>, error: bool) {
         mock.expect_get_node_slots().times(1).returning(move || {
@@ -305,6 +342,22 @@ mod reconcile_tests {
                 serde_json::from_str(&instance_list_json).unwrap();
             Ok(instance_list)
         });
+    }
+
+    fn configure_find_pods_with_field(
+        mock: &mut MockKubeInterface,
+        selector: &'static str,
+        result_file: &'static str,
+    ) {
+        mock.expect_find_pods_with_field()
+            .times(1)
+            .withf(move |s| s == selector)
+            .returning(move |_| {
+                let pods_json = file::read_file_to_string(result_file);
+                let pods: ObjectList<Object<PodSpec, PodStatus>> =
+                    serde_json::from_str(&pods_json).unwrap();
+                Ok(pods)
+            });
     }
 
     struct NodeSlots {
@@ -336,6 +389,13 @@ mod reconcile_tests {
             // kube_interface to find Instance with node-a using slots:
             //    config-a-359973-1 & config-a-359973-3
             configure_get_instances(&mut kube_interface, instances_result_file);
+
+            // kube_interface to find no pods with unready containers
+            configure_find_pods_with_field(
+                &mut kube_interface,
+                "spec.nodeName=node-a",
+                "../test/json/running-pod-list-for-config-a-shared.json",
+            );
 
             if let Some(update_instance_) = update_instance {
                 trace!(
