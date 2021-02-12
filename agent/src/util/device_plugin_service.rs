@@ -687,30 +687,30 @@ fn build_virtual_devices(
     node_name: &str,
 ) -> Vec<v1beta1::Device> {
     let mut devices: Vec<v1beta1::Device> = Vec::new();
-    for (device_name, allocated_node) in device_usage {
-        // Throw error if unshared resource is reserved by another node
-        if !shared && allocated_node != "" && allocated_node != node_name {
-            panic!("build_virtual_devices - unshared device reserved by a different node");
-        }
-        // Advertise the device as Unhealthy if it is
-        // USED by !this_node && SHARED
-        let unhealthy = shared && allocated_node != "" && allocated_node != node_name;
-        let health = if unhealthy {
-            UNHEALTHY.to_string()
-        } else {
-            HEALTHY.to_string()
-        };
-        trace!(
-            "build_virtual_devices - [shared = {}] device with name [{}] and health: [{}]",
-            shared,
-            device_name,
-            health
-        );
-        devices.push(v1beta1::Device {
-            id: device_name.clone(),
-            health,
-        });
-    }
+    // for (device_name, allocated_node) in device_usage {
+    //     // Throw error if unshared resource is reserved by another node
+    //     if !shared && allocated_node != "" && allocated_node != node_name {
+    //         panic!("build_virtual_devices - unshared device reserved by a different node");
+    //     }
+    //     // Advertise the device as Unhealthy if it is
+    //     // USED by !this_node && SHARED
+    //     let unhealthy = shared && allocated_node != "" && allocated_node != node_name;
+    //     let health = if unhealthy {
+    //         UNHEALTHY.to_string()
+    //     } else {
+    //         HEALTHY.to_string()
+    //     };
+    //     trace!(
+    //         "build_virtual_devices - [shared = {}] device with name [{}] and health: [{}]",
+    //         shared,
+    //         device_name,
+    //         health
+    //     );
+    //     devices.push(v1beta1::Device {
+    //         id: device_name.clone(),
+    //         health,
+    //     });
+    // }
     devices
 }
 

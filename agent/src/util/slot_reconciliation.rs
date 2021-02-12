@@ -9,7 +9,11 @@ use k8s_openapi::api::core::v1::PodStatus;
 use kube::api::{Api, Informer, WatchEvent};
 use mockall::automock;
 use mockall::predicate::*;
-use std::collections::{HashMap, HashSet};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::{Arc, Mutex},
+    time::Instant,
+};
 use tokio::process::Command;
 
 type SlotQueryResult = Result<HashSet<String>, Box<dyn std::error::Error + Send + Sync + 'static>>;
@@ -66,179 +70,193 @@ impl SlotQuery for CriCtlSlotQuery {
     }
 }
 
+pub struct SlotMetadata {
+    pub pod_id: String,
+    pub allocation_timestamp: String,
+}
+
+pub struct DevicePluginReconciler {
+    pub slot_pod_map: Arc<Mutex<HashMap<Slot, SlotMetadata>>>,
+}
+
 /// Makes sure Instance's `device_usage` accurately reflects actual usage.
-pub async fn reconcile(
-    node_name: &str,
-    slot_query: &impl SlotQuery,
-    kube_interface: &impl KubeInterface,
-) {
-    // First, check if any of the existing pods running on this node that has a container
-    // that is still not ready, this way we avoid incorrectly cleaning up slots during
-    // container bring-up. When the container is ready, Informer will inform us that
-    // the pod was modified and then reconcile will be called again
-    let pods = match kube_interface
-        .find_pods_with_field(&format!("{}={}", "spec.nodeName", &node_name,))
-        .await
-    {
-        Ok(pods) => {
-            trace!("reconcile - found {} pods on this node", pods.items.len());
-            pods
-        }
-        Err(e) => {
-            trace!("reconcile - error finding pending pods: {}", e);
+impl DevicePluginReconciler {
+    pub async fn reconcile(
+        &self,
+        node_name: &str,
+        slot_query: &impl SlotQuery,
+        kube_interface: &impl KubeInterface,
+    ) {
+        // First, check if any of the existing pods running on this node that has a container
+        // that is still not ready, this way we avoid incorrectly cleaning up slots during
+        // container bring-up. When the container is ready, Informer will inform us that
+        // the pod was modified and then reconcile will be called again
+        let pods = match kube_interface
+            .find_pods_with_field(&format!("{}={}", "spec.nodeName", &node_name,))
+            .await
+        {
+            Ok(pods) => {
+                trace!("reconcile - found {} pods on this node", pods.items.len());
+                pods
+            }
+            Err(e) => {
+                trace!("reconcile - error finding pending pods: {}", e);
+                return;
+            }
+        };
+
+        let any_unready_pods = pods.items.iter().any(|pod| {
+            pod.status
+                .as_ref()
+                .unwrap_or(&PodStatus::default())
+                .conditions
+                .as_ref()
+                .unwrap_or(&Vec::new())
+                .iter()
+                .any(|condition| condition.type_ == "ContainersReady" && condition.status != "True")
+        });
+
+        if any_unready_pods {
+            info!("reconcile - pods with unready containers exist on this node, we can't reconcile slots yet");
             return;
         }
-    };
 
-    let any_unready_pods = pods.items.iter().any(|pod| {
-        pod.status
-            .as_ref()
-            .unwrap_or(&PodStatus::default())
-            .conditions
-            .as_ref()
-            .unwrap_or(&Vec::new())
-            .iter()
-            .any(|condition| condition.type_ == "ContainersReady" && condition.status != "True")
-    });
+        // Use crictl to check which pods of the current node are currently assigned slots
+        let node_slot_usage = match slot_query.get_node_slots().await {
+            Ok(usage) => usage,
+            Err(e) => {
+                warn!("reconcile - get_node_slots failed: {:?}", e);
+                // If an error occurs in the crictl call, return early
+                // to avoid treating this error like crictl found no
+                // active containers. Currently, reconcile is a best
+                // effort approach.
+                return;
+            }
+        };
+        trace!(
+            "reconcile - slots currently in use on this node: {:?}",
+            node_slot_usage
+        );
 
-    if any_unready_pods {
-        info!("reconcile - pods with unready containers exist on this node, we can't reconcile slots yet");
-        return;
-    }
+        // Get slot allocation as known to the kubernetes infrastructure
+        let instances = match kube_interface.get_instances().await {
+            Ok(instances) => instances,
+            Err(e) => {
+                trace!("reconcile - failed to get instances: {:?}", e);
+                return;
+            }
+        };
 
-    // Use crictl to check which pods of the current node are currently assigned slots
-    let node_slot_usage = match slot_query.get_node_slots().await {
-        Ok(usage) => usage,
-        Err(e) => {
-            warn!("reconcile - get_node_slots failed: {:?}", e);
-            // If an error occurs in the crictl call, return early
-            // to avoid treating this error like crictl found no
-            // active containers. Currently, reconcile is a best
-            // effort approach.
-            return;
-        }
-    };
-    trace!(
-        "reconcile - slots currently in use on this node: {:?}",
-        node_slot_usage
-    );
+        for instance in instances {
+            // Check Instance against list of slots that are being used by this node's
+            // current pods.  If we find any missing, we should update the Instance for
+            // the actual slot usage.
+            let slots_missing_this_node_name = instance
+                .spec
+                .device_usage
+                .iter()
+                .filter_map(|(slot, node)| {
+                    if node != node_name && node_slot_usage.contains(slot) {
+                        // We need to add node_name to this slot IF
+                        //     the slot is not labeled with node_name AND
+                        //     there is a container using that slot on this node
+                        trace!(
+                            "reconcile - slot {} assigned to node {}, instead of {}",
+                            slot,
+                            node,
+                            node_name
+                        );
+                        Some(slot.to_string())
+                    } else {
+                        trace!("reconcile - slot {} assigned to node {}", slot, node);
+                        None
+                    }
+                })
+                .collect::<HashSet<Slot>>();
 
-    // Get slot allocation as known to the kubernetes infrastructure
-    let instances = match kube_interface.get_instances().await {
-        Ok(instances) => instances,
-        Err(e) => {
-            trace!("reconcile - failed to get instances: {:?}", e);
-            return;
-        }
-    };
+            // Check Instance to find slots that are registered to this node, but
+            // there is no actual pod using the slot. We should update the Instance
+            // to clear the false usage.
+            let slots_to_clean = instance
+                .spec
+                .device_usage
+                .iter()
+                .filter_map(|(slot, node)| {
+                    if node == node_name && !node_slot_usage.contains(slot) {
+                        // We need to clean this slot IF
+                        //     this slot is handled by this node AND
+                        //     there are no containers using that slot on this node
+                        Some(slot.to_string())
+                    } else {
+                        None
+                    }
+                })
+                .collect::<HashSet<Slot>>();
 
-    for instance in instances {
-        // Check Instance against list of slots that are being used by this node's
-        // current pods.  If we find any missing, we should update the Instance for
-        // the actual slot usage.
-        let slots_missing_this_node_name = instance
-            .spec
-            .device_usage
-            .iter()
-            .filter_map(|(slot, node)| {
-                if node != node_name && node_slot_usage.contains(slot) {
-                    // We need to add node_name to this slot IF
-                    //     the slot is not labeled with node_name AND
-                    //     there is a container using that slot on this node
-                    trace!(
-                        "reconcile - slot {} assigned to node {}, instead of {}",
-                        slot,
-                        node,
-                        node_name
-                    );
-                    Some(slot.to_string())
-                } else {
-                    trace!("reconcile - slot {} assigned to node {}", slot, node);
-                    None
-                }
-            })
-            .collect::<HashSet<Slot>>();
-
-        // Check Instance to find slots that are registered to this node, but
-        // there is no actual pod using the slot. We should update the Instance
-        // to clear the false usage.
-        let slots_to_clean = instance
-            .spec
-            .device_usage
-            .iter()
-            .filter_map(|(slot, node)| {
-                if node == node_name && !node_slot_usage.contains(slot) {
-                    // We need to clean this slot IF
-                    //     this slot is handled by this node AND
-                    //     there are no containers using that slot on this node
-                    Some(slot.to_string())
-                } else {
-                    None
-                }
-            })
-            .collect::<HashSet<Slot>>();
-
-        if !slots_to_clean.is_empty() || !slots_missing_this_node_name.is_empty() {
-            debug!(
+            if !slots_to_clean.is_empty() || !slots_missing_this_node_name.is_empty() {
+                debug!(
                     "reconcile - update Instance slots_to_clean: {:?}  slots_missing_this_node_name: {:?}",
                     slots_to_clean,
                     slots_missing_this_node_name
                 );
 
-            let modified_device_usage = instance
-                .spec
-                .device_usage
-                .iter()
-                .map(|(slot, node)| {
-                    (
-                        slot.to_string(),
-                        if slots_missing_this_node_name.contains(slot) {
-                            // Set this to node_name because there have been
-                            // cases where a Pod is running (which corresponds
-                            // to an Allocate call, but the Instance slot is empty.
-                            node_name.into()
-                        } else if slots_to_clean.contains(slot) {
-                            // Set this to empty string because there is no
-                            // Deallocate message from kubelet for us to know
-                            // when a slot is no longer in use
-                            "".into()
-                        } else {
-                            // This slot remains unchanged.
-                            node.into()
-                        },
-                    )
-                })
-                .collect::<HashMap<Slot, NodeName>>();
+                let modified_device_usage = instance
+                    .spec
+                    .device_usage
+                    .iter()
+                    .map(|(slot, node)| {
+                        (
+                            slot.to_string(),
+                            if slots_missing_this_node_name.contains(slot) {
+                                // Set this to node_name because there have been
+                                // cases where a Pod is running (which corresponds
+                                // to an Allocate call, but the Instance slot is empty.
+                                node_name.into()
+                            } else if slots_to_clean.contains(slot) {
+                                // Set this to empty string because there is no
+                                // Deallocate message from kubelet for us to know
+                                // when a slot is no longer in use
+                                "".into()
+                            } else {
+                                // This slot remains unchanged.
+                                node.into()
+                            },
+                        )
+                    })
+                    .collect::<HashMap<Slot, NodeName>>();
 
-            let modified_instance = Instance {
-                configuration_name: instance.spec.configuration_name.clone(),
-                metadata: instance.spec.metadata.clone(),
-                rbac: instance.spec.rbac.clone(),
-                shared: instance.spec.shared,
-                device_usage: modified_device_usage,
-                nodes: instance.spec.nodes.clone(),
-            };
-            info!("reconcile - update Instance from: {:?}", &instance.spec);
-            info!("reconcile - update Instance   to: {:?}", &modified_instance);
-            match kube_interface
-                .update_instance(
-                    &modified_instance,
-                    &instance.metadata.name,
-                    &instance.metadata.namespace.unwrap(),
-                )
-                .await
-            {
-                Ok(()) => {}
-                Err(e) => {
-                    // If update fails, let the next iteration update the Instance.  We
-                    // may want to revisit this decision and add some retry logic
-                    // here.
-                    error!("reconcile - update Instance failed: {:?}", e);
+                let modified_instance = Instance {
+                    configuration_name: instance.spec.configuration_name.clone(),
+                    metadata: instance.spec.metadata.clone(),
+                    rbac: instance.spec.rbac.clone(),
+                    shared: instance.spec.shared,
+                    device_usage: modified_device_usage,
+                    nodes: instance.spec.nodes.clone(),
+                };
+                info!("reconcile - update Instance from: {:?}", &instance.spec);
+                info!("reconcile - update Instance   to: {:?}", &modified_instance);
+                match kube_interface
+                    .update_instance(
+                        &modified_instance,
+                        &instance.metadata.name,
+                        &instance.metadata.namespace.unwrap(),
+                    )
+                    .await
+                {
+                    Ok(()) => {}
+                    Err(e) => {
+                        // If update fails, let the next iteration update the Instance.  We
+                        // may want to revisit this decision and add some retry logic
+                        // here.
+                        error!("reconcile - update Instance failed: {:?}", e);
+                    }
                 }
             }
         }
+        trace!("reconcile - thread iteration end");
     }
-    trace!("reconcile - thread iteration end");
+
+    pub fn deallocate(slot: Slot) {}
 }
 
 /// This watches pod to make sure that all Instances' device_usage (slots)
@@ -279,6 +297,10 @@ pub async fn watch_pods() -> anyhow::Result<()> {
         image_endpoint,
     };
 
+    let reconciler = DevicePluginReconciler {
+        slot_pod_map: Arc::new(std::sync::Mutex::new(HashMap::new())),
+    };
+
     loop {
         // starts a pod watch and returns a stream
         let mut pods = informer.poll().await?.boxed();
@@ -294,6 +316,11 @@ pub async fn watch_pods() -> anyhow::Result<()> {
                         break;
                     }
 
+                    // if pod.status.is_some() && !pod.status.unwrap().container_statuses.started {
+                    //     trace!("pod watch - pod {} has a container that is not ready")
+
+                    // }
+
                     // Since some pod changes are happening, this is a good time to re-evaluate the allocated slots
                     let containers = pod
                         .spec
@@ -307,7 +334,14 @@ pub async fn watch_pods() -> anyhow::Result<()> {
                         containers
                     );
 
-                    reconcile(&node_name, &slot_query, &kube_interface).await;
+                    reconciler
+                        .reconcile(&node_name, &slot_query, &kube_interface)
+                        .await;
+                }
+                WatchEvent::Deleted(pod) => {
+                    // if reconciler.slot_pod_map.contains(pod) {
+                    //     reconciler.deallocate(pod);
+                    // }
                 }
                 WatchEvent::Added(_) => {} // No need to handle adds, this will be handled by DevicePluginService's allocate
                 WatchEvent::Error(e) => {
