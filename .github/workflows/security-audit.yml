@@ -21,7 +21,7 @@ jobs:
   
       # sends an email if security audit failed 
       - name: Send mail
-        if: steps.cargo-audit.outcome != 'success'
+        if: steps.cargo-audit.outcome == 'success'
         uses: dawidd6/action-send-mail@v2
         with:
           server_address: smtp-mail.outlook.com
