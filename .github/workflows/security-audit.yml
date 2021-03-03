@@ -2,6 +2,7 @@
 
 name: Security Audit
 on:
+  workflow_dispatch:
   schedule:
   - cron: '0 0 * * *' #runs daily at 12:00 am UTC
     
