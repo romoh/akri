@@ -79,13 +79,16 @@ pub struct DevicePluginReconciler {
 
 /// Makes sure Instance's `device_usage` accurately reflects actual usage.
 impl DevicePluginReconciler {
-    pub fn add_or_update_slot(&self, slot: Slot){
+    pub fn add_or_update_slot(&self, slot: Slot) {
         // TODO: Add validation
         // Adds a new slot, pod info is unknown at this point
-        self.slot_pod_map.lock().unwrap().insert(slot, String::new());
+        self.slot_pod_map
+            .lock()
+            .unwrap()
+            .insert(slot, String::new());
     }
 
-    pub fn remove_slot(&self, slot: Slot){
+    pub fn remove_slot(&self, slot: Slot) {
         self.slot_pod_map.lock().unwrap().remove(&slot);
     }
 
