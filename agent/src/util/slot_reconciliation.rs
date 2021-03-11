@@ -70,17 +70,25 @@ impl SlotQuery for CriCtlSlotQuery {
     }
 }
 
-pub struct SlotMetadata {
-    pub pod_id: String,
-    pub allocation_timestamp: String,
-}
+// Name of the pod
+type Pod = String;
 
 pub struct DevicePluginReconciler {
-    pub slot_pod_map: Arc<Mutex<HashMap<Slot, SlotMetadata>>>,
+    pub slot_pod_map: Arc<Mutex<HashMap<Slot, Pod>>>,
 }
 
 /// Makes sure Instance's `device_usage` accurately reflects actual usage.
 impl DevicePluginReconciler {
+    pub fn add_or_update_slot(&self, slot: Slot){
+        // TODO: Add validation
+        // Adds a new slot, pod info is unknown at this point
+        self.slot_pod_map.lock().unwrap().insert(slot, String::new());
+    }
+
+    pub fn remove_slot(&self, slot: Slot){
+        self.slot_pod_map.lock().unwrap().remove(&slot);
+    }
+
     pub async fn reconcile(
         &self,
         node_name: &str,
@@ -255,8 +263,6 @@ impl DevicePluginReconciler {
         }
         trace!("reconcile - thread iteration end");
     }
-
-    pub fn deallocate(slot: Slot) {}
 }
 
 /// This watches pod to make sure that all Instances' device_usage (slots)
